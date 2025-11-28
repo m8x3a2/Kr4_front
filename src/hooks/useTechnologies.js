@@ -1,3 +1,5 @@
+// src/hooks/useTechnologies.js
+
 import useLocalStorage from './useLocalStorage';
 
 const initialTechnologies = [
@@ -9,8 +11,9 @@ const initialTechnologies = [
   { id: 6, title: 'REST API', description: 'Проектирование API', status: 'not-started', notes: '', category: 'backend' },
 ];
 
+
 function useTechnologies() {
-  const [technologies, setTechnologies] = useLocalStorage('technologies', initialTechnologies);  // или 'techTrackerData', если хочешь match старому ключу
+  const [technologies, setTechnologies] = useLocalStorage('technologies', initialTechnologies);
 
   const updateStatus = (id, newStatus) => {
     setTechnologies(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
@@ -18,6 +21,15 @@ function useTechnologies() {
 
   const updateNotes = (id, notes) => {
     setTechnologies(prev => prev.map(t => t.id === id ? { ...t, notes } : t));
+  };
+
+  // ←←←←←←←←←←←←←←← ЭТОТ МЕТОД БЫЛ ПРОПУЩЕН! ←←←←←←←←←←←←←←←
+  const addTechnology = (newTech) => {
+    setTechnologies(prev => [...prev, { ...newTech, id: Date.now() }]);
+  };
+
+  const deleteTechnology = (id) => {
+    setTechnologies(prev => prev.filter(t => t.id !== id));
   };
 
   const markAllCompleted = () => setTechnologies(prev => prev.map(t => ({ ...t, status: 'completed' })));
@@ -43,6 +55,8 @@ function useTechnologies() {
 
   return {
     technologies,
+    addTechnology,        // ←←←←←←←←←←←←←←← ВОТ ЭТОТ МЕТОД ДОБАВЬ!
+    deleteTechnology,     // ←←←←←←←←←←←←←← (по желанию, пригодится позже)
     updateStatus,
     updateNotes,
     markAllCompleted,

@@ -1,3 +1,5 @@
+// src/components/TechnologyCard.jsx
+import { Link } from 'react-router-dom';
 import TechnologyNotes from './TechnologyNotes';
 
 function TechnologyCard({ technology, onStatusChange, onNotesChange }) {
@@ -9,41 +11,51 @@ function TechnologyCard({ technology, onStatusChange, onNotesChange }) {
     'completed': 'not-started'
   };
 
+  // ЭТА ФУНКЦИЯ ТЕПЕРЬ ИСПОЛЬЗУЕТСЯ!
   const handleStatusClick = (e) => {
-    e.stopPropagation();                    // важно!
+    e.preventDefault();        // ← Важно! Блокируем переход по Link
+    e.stopPropagation();
     onStatusChange(id, nextStatus[status]);
   };
 
   return (
-   // TechnologyCard.jsx — заменить весь внешний div на этот код:
-<div 
-  className={`technology-card status-${status}`}
-  onClick={handleStatusClick}               // ← добавляем сюда клик
->
-  <div className="technology-header">
-    <h3>{title}</h3>
-    <span className="status-badge">
-      {status === 'completed' && 'Изучено'}
-      {status === 'in-progress' && 'В процессе'}
-      {status === 'not-started' && 'Не начато'}
-    </span>
-  </div>
+    <div className={`technology-card status-${status}`}>
+      {/* Оборачиваем ВЕСЬ контент в Link, НО отменяем переход при клике на статус */}
+      <Link 
+        to={`/technologies/${id}`} 
+        style={{ textDecoration: 'none', color: 'inherit' }}
+        onClick={(e) => {
+          // Если клик был именно по заголовку — меняем статус и блокируем переход
+          if (e.target.closest('.technology-header')) {
+            handleStatusClick(e);
+          }
+        }}
+      >
+        <div className="technology-header" onClick={handleStatusClick}>
+          <h3>{title}</h3>
+          <span className="status-badge">
+            {status === 'completed' && 'Изучено'}
+            {status === 'in-progress' && 'В процессе'}
+            {status === 'not-started' && 'Не начато'}
+          </span>
+        </div>
 
-  <p className="technology-description">{description}</p>
-  
-  <small style={{color: '#666', display: 'block', margin: '8px 0'}}>
-    Клик по карточке — сменить статус
-  </small>
+        <p className="technology-description">{description}</p>
 
-  {/* Останавливаем всплытие, чтобы редактирование заметок не меняло статус */}
-  <div onClick={(e) => e.stopPropagation()}>
-    <TechnologyNotes 
-      notes={notes || ''} 
-      onNotesChange={onNotesChange}
-      techId={id}
-    />
-  </div>
-</div>
+        <div style={{ margin: '12px 0', fontSize: '0.9em', color: '#27ae60', fontWeight: '500' }}>
+          Клик по заголовку → сменить статус
+        </div>
+      </Link>
+
+      {/* Заметки — вне Link, чтобы не мешать */}
+      <div onClick={(e) => e.stopPropagation()}>
+        <TechnologyNotes 
+          notes={notes || ''} 
+          onNotesChange={onNotesChange}
+          techId={id}
+        />
+      </div>
+    </div>
   );
 }
 

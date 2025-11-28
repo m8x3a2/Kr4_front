@@ -1,18 +1,59 @@
+/* App.css — ФИНАЛЬНАЯ ВЕРСИЯ (всё сохраняем + добавляем) */
+
 .App {
   min-height: 100vh;
   background: #f5f7fa;
   padding: 20px 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.container {
+/* Этот класс теперь используется на всех страницах */
+.page {
   max-width: 900px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Заголовки страниц */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.8em;
+}
+
+/* Кнопки */
+.back-link,
+.btn {
+  padding: 10px 16px;
+  background: #3498db;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.95em;
+  display: inline-block;
+}
+
+.back-link:hover,
+.btn:hover {
+  background: #2980b9;
+}
+
+/* Список технологий — САМЫЙ ВАЖНЫЙ БЛОК */
 .technologies-list {
   display: grid;
-  gap: 10px;
+  gap: 16px;
+  margin-top: 20px;
 }
 
 @media (min-width: 768px) {
@@ -21,25 +62,88 @@
   }
 }
 
-* {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+@media (min-width: 1100px) {
+  .technologies-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
-.quick-actions, .filter-buttons {
+
+/* Быстрые действия и фильтры */
+.quick-actions,
+.filter-buttons {
   margin: 20px 0;
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.quick-actions button, .filter-buttons button {
+.quick-actions button,
+.filter-buttons button {
   padding: 10px 16px;
   border: none;
   border-radius: 6px;
   background: #3498db;
   color: white;
   cursor: pointer;
+  font-size: 0.95em;
+}
+
+.quick-actions button:hover,
+.filter-buttons button:hover {
+  background: #2980b9;
 }
 
 .filter-buttons button.active {
   background: #2980b9;
+  font-weight: bold;
 }
+
+/* Поиск */
+.search-box {
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.search-box input {
+  flex: 1;
+  min-width: 250px;
+  padding: 12px;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.search-box span {
+  color: #555;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* Кнопки статуса на детальной странице */
+.status-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.status-buttons button {
+  padding: 10px 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+
+.status-buttons button.active {
+  background: #2980b9;
+  color: white;
+  border-color: #2980b9;
+}
+
+/* Убираем старый .container — он больше не нужен */
+/* Был в старом App.js: <div className="container"> — теперь его нет */
+/* Вместо него везде .page */
