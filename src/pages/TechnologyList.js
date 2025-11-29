@@ -1,4 +1,8 @@
 // src/pages/TechnologyList.js
+import '../components/TechnologyCard.css';
+import '../components/ProgressHeader.css';
+
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import useTechnologies from '../hooks/useTechnologies';
