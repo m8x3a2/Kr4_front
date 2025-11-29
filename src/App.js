@@ -7,21 +7,24 @@ import AddTechnology from './pages/AddTechnology';
 import TechnologyDetail from './pages/TechnologyDetail';
 import Statistics from './pages/Statistics';
 import Settings from './pages/Settings';
+import useTechnologies from './hooks/useTechnologies';
 
 import './App.css';
 
 function App() {
+  const techHook = useTechnologies(); // Хук для технологий, чтобы передать пропсы
+
   return (
     <Router>
       <Navigation />
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/technologies" element={<TechnologyList />} />
-          <Route path="/technologies/:id" element={<TechnologyDetail />} />
-          <Route path="/add" element={<AddTechnology />} />
-          <Route path="/statistics" element={<Statistics />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/technologies" element={<TechnologyList {...techHook} />} />
+          <Route path="/technologies/:id" element={<TechnologyDetail {...techHook} />} />
+          <Route path="/add" element={<AddTechnology {...techHook} />} />
+          <Route path="/statistics" element={<Statistics {...techHook} />} />
+          <Route path="/settings" element={<Settings {...techHook} />} />
         </Routes>
       </main>
     </Router>
