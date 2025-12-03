@@ -1,5 +1,5 @@
 // src/pages/TechnologyDetail.js
-// Обновлено в соответствии с README: кнопки для статуса, заметки как p (просмотр), редактирование заметок остается в карточке списка
+
 import { useParams, Link } from 'react-router-dom';
 import useTechnologies from '../hooks/useTechnologies';
 
@@ -9,59 +9,78 @@ function TechnologyDetail() {
 
   const technology = technologies.find(t => t.id === parseInt(id));
 
-  const updateStatusHandler = (newStatus) => {
-    updateStatus(technology.id, newStatus);
-  };
-
   if (!technology) {
     return (
       <div className="page">
+        <div className="page-header">
+          <div></div>
+          <Link to="/technologies" className="back-link">Назад</Link>
+        </div>
         <h1>Технология не найдена</h1>
-        <Link to="/technologies">← Назад к списку</Link>
       </div>
     );
   }
 
+  const handleStatusChange = (newStatus) => {
+    updateStatus(id, newStatus);
+  };
+
   return (
     <div className="page">
-      <div className="page-header">
-        <Link to="/technologies" className="back-link">← Назад</Link>
-        <h1>{technology.title}</h1>
+      {/* Шапка: название слева, назад — справа */}
+      <div className="page-header" style={{ marginBottom: '30px' }}>
+        <div>
+          <h1 style={{ margin: 0, fontSize: '2em', color: '#2c3e50' }}>
+            {technology.title}
+          </h1>
+        </div>
+        <Link to="/technologies" className="back-link">
+          Назад
+        </Link>
       </div>
 
-      <div className="detail-section">
-        <h3>Описание</h3>
-        <p>{technology.description}</p>
-      </div>
+      {/* Описание под названием */}
+      {technology.description ? (
+        <div style={{ marginBottom: '30px', lineHeight: '1.6', color: '#444', fontSize: '1.1em' }}>
+          {technology.description}
+        </div>
+      ) : (
+        <p style={{ color: '#999', fontStyle: 'italic' }}>Описание отсутствует</p>
+      )}
 
-      <div className="detail-section">
-        <h3>Статус</h3>
+      {/* Статус */}
+      <div style={{ margin: '30px 0' }}>
+        <h3>Статус изучения</h3>
         <div className="status-buttons">
-          <button
-            onClick={() => updateStatusHandler('not-started')}
-            className={technology.status === 'not-started' ? 'active' : ''}
-          >
-            Не начато
-          </button>
-          <button
-            onClick={() => updateStatusHandler('in-progress')}
-            className={technology.status === 'in-progress' ? 'active' : ''}
-          >
-            В процессе
-          </button>
-          <button
-            onClick={() => updateStatusHandler('completed')}
-            className={technology.status === 'completed' ? 'active' : ''}
-          >
-            Изучено
-          </button>
+          {['not-started', 'in-progress', 'completed'].map(status => (
+            <button
+              key={status}
+              onClick={() => handleStatusChange(status)}
+              className={technology.status === status ? 'active' : ''}
+            >
+              {status === 'not-started' && 'Не начато'}
+              {status === 'in-progress' && 'В процессе'}
+              {status === 'completed' && 'Изучено'}
+            </button>
+          ))}
         </div>
       </div>
 
+      {/* Заметки */}
       {technology.notes && (
-        <div className="detail-section">
+        <div style={{ marginTop: '30px' }}>
           <h3>Заметки</h3>
-          <p>{technology.notes}</p>
+          <p style={{
+            background: '#f8f9fa',
+            padding: '16px',
+            borderRadius: '8px',
+            borderLeft: '4px solid #3498db',
+            whiteSpace: 'pre-wrap',
+            fontSize: '1em',
+            lineHeight: '1.6'
+          }}>
+            {technology.notes}
+          </p>
         </div>
       )}
     </div>

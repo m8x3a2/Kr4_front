@@ -1,19 +1,20 @@
-// src/components/Navigation.js (обновлено с новыми ссылками)
-import { Link } from 'react-router-dom';
+// src/components/Navigation.js
+import { NavLink } from 'react-router-dom';
+import './Navigation.css'; // создадим новый файл
 
 function Navigation() {
   return (
-    <nav className="main-nav">
-      <div className="nav-brand">
-        <h2>Трекер технологий</h2>
+    <nav className="top-nav">
+      <div className="nav-container">
+        <h1 className="nav-logo">Трекер технологий</h1>
+        <ul className="nav-menu">
+          <li><NavLink to="/" end className={({ isActive }) => isActive ? 'active' : ''}>Главная</NavLink></li>
+          <li><NavLink to="/technologies" className={({ isActive }) => isActive ? 'active' : ''}>Список технологий</NavLink></li>
+          <li><NavLink to="/add" className={({ isActive }) => isActive ? 'active' : ''}>Добавить технологию</NavLink></li>
+          <li><NavLink to="/statistics" className={({ isActive }) => isActive ? 'active' : ''}>Статистика</NavLink></li>
+          <li><NavLink to="/settings" className={({ isActive }) => isActive ? 'active' : ''}>Настройки</NavLink></li>
+        </ul>
       </div>
-      <ul className="nav-links">
-        <li><Link to="/">Главная</Link></li>
-        <li><Link to="/technologies">Список технологий</Link></li>
-        <li><Link to="/add">Добавить технологию</Link></li>
-        <li><Link to="/statistics">Статистика</Link></li>
-        <li><Link to="/settings">Настройки</Link></li>
-      </ul>
     </nav>
   );
 }

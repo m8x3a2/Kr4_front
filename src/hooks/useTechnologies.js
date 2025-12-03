@@ -63,7 +63,8 @@ function useTechnologies() {
     resetAll,
     selectRandomNext,
     clearAllNotes,
-    progress
+    progress,
+    setTechnologies
   };
 }
 

@@ -1,4 +1,4 @@
-// src/pages/Statistics.js — упрощённая и правильная версия по тетради
+// src/pages/Statistics.js
 import useTechnologies from '../hooks/useTechnologies';
 import ProgressBar from '../components/ProgressBar';
 
@@ -9,20 +9,38 @@ function Statistics() {
   const inProgress = technologies.filter(t => t.status === 'in-progress').length;
   const notStarted = technologies.filter(t => t.status === 'not-started').length;
 
+  const total = technologies.length;
+
   return (
     <div className="page">
       <h1>Статистика прогресса</h1>
 
-      <ProgressBar progress={progress} label="Общий прогресс изучения" />
+      <ProgressBar progress={progress} label="Общий прогресс" color="#4caf50" />
 
-      <div style={{ marginTop: '30px' }}>
-        <h3>Подробно:</h3>
-        <ul style={{ fontSize: '1.1em', lineHeight: '1.8' }}>
-          <li>Всего технологий: <strong>{technologies.length}</strong></li>
-          <li>Изучено: <strong>{completed}</strong></li>
-          <li>В процессе: <strong>{inProgress}</strong></li>
-          <li>Не начато: <strong>{notStarted}</strong></li>
-        </ul>
+      <div style={{ marginTop: '40px' }}>
+        <h2>По статусам</h2>
+
+        <ProgressBar
+          progress={total ? Math.round((completed / total) * 100) : 0}
+          label={`Изучено: ${completed}`}
+          color="#27ae60"
+        />
+
+        <ProgressBar
+          progress={total ? Math.round((inProgress / total) * 100) : 0}
+          label={`В процессе: ${inProgress}`}
+          color="#f39c12"
+        />
+
+        <ProgressBar
+          progress={total ? Math.round((notStarted / total) * 100) : 0}
+          label={`Не начато: ${notStarted}`}
+          color="#e74c3c"
+        />
+      </div>
+
+      <div style={{ marginTop: '40px', fontSize: '1.1em', lineHeight: '1.8' }}>
+        <p>Всего технологий в трекере: <strong>{total}</strong></p>
       </div>
     </div>
   );

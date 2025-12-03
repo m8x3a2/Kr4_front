@@ -1,7 +1,7 @@
 // src/pages/TechnologyList.js
+
 import '../components/TechnologyCard.css';
 import '../components/ProgressHeader.css';
-
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -20,6 +20,7 @@ function TechnologyList() {
     resetAll,
     selectRandomNext,
     clearAllNotes,
+    deleteTechnology,
   } = useTechnologies();
 
   const [filter, setFilter] = useState('all');
@@ -39,14 +40,16 @@ function TechnologyList() {
 
   return (
     <div className="page">
+      {/* Шапка — только заголовок */}
       <div className="page-header">
         <h1>Список технологий</h1>
-        <Link to="/add" className="btn">+ Добавить</Link>
       </div>
 
+      {/* Прогресс-бар */}
       <ProgressHeader technologies={technologies} />
 
-      <QuickActions 
+      {/* Быстрые действия */}
+      <QuickActions
         onMarkAllCompleted={markAllCompleted}
         onResetAll={resetAll}
         onSelectRandomNext={selectRandomNext}
@@ -54,8 +57,29 @@ function TechnologyList() {
         technologies={technologies}
       />
 
+      {/* КНОПКА "ДОБАВИТЬ" — ПЕРЕНЕСЕНА СЮДА */}
+      <div style={{ margin: '30px 0 20px', textAlign: 'right' }}>
+        <Link
+          to="/add"
+          className="btn"
+          style={{
+            fontSize: '1.1em',
+            padding: '14px 28px',
+            background: '#27ae60',
+            fontWeight: '600',
+            boxShadow: '0 4px 12px rgba(39, 174, 96, 0.3)',
+          }}
+          onMouseOver={(e) => e.currentTarget.style.background = '#219653'}
+          onMouseOut={(e) => e.currentTarget.style.background = '#27ae60'}
+        >
+          + Добавить технологию
+        </Link>
+      </div>
+
+      {/* Фильтры */}
       <FilterButtons currentFilter={filter} onFilterChange={setFilter} />
 
+      {/* Поиск */}
       <div className="search-box">
         <input
           type="text"
@@ -66,6 +90,7 @@ function TechnologyList() {
         <span>Найдено: {filteredTechs.length} из {technologies.length}</span>
       </div>
 
+      {/* Список карточек */}
       <div className="technologies-list">
         {filteredTechs.length === 0 ? (
           <p style={{ textAlign: 'center', color: '#666', gridColumn: '1 / -1' }}>
@@ -78,6 +103,7 @@ function TechnologyList() {
               technology={tech}
               onStatusChange={updateStatus}
               onNotesChange={updateNotes}
+              onDelete={deleteTechnology}
             />
           ))
         )}
