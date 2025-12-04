@@ -1,4 +1,5 @@
-// src/components/TechnologyCard.jsx (обновленный с MUI)
+// src/components/TechnologyCard.jsx — ИТОГОВАЯ ВЕРСИЯ
+
 import { Link } from 'react-router-dom';
 import {
   Card,
@@ -47,59 +48,86 @@ function TechnologyCard({ technology, onStatusChange, onNotesChange, onDelete })
   };
 
   const handleCardClick = (e) => {
-    if (e.target.closest('a') || e.target.closest('button') || e.target.closest('input')) {
+    // Не меняем статус при клике на ссылку, кнопку, textarea или input
+    if (
+      e.target.closest('a') ||
+      e.target.closest('button') ||
+      e.target.tagName === 'TEXTAREA' ||
+      e.target.tagName === 'INPUT'
+    ) {
       return;
     }
     onStatusChange(id, nextStatus[status]);
   };
 
-  const handleDelete = () => {
+  const handleDelete = (e) => {
+    e.stopPropagation();
     if (window.confirm(`Удалить "${title}"?`)) {
       onDelete(id);
     }
   };
 
   return (
-    <Card 
+    <Card
       onClick={handleCardClick}
-      sx={{ 
+      sx={{
         cursor: 'pointer',
-        '&:hover': { boxShadow: 6 },
-        position: 'relative'
+        transition: 'all 0.3s ease',
+        '&:hover': { transform: 'translateY(-4px)', boxShadow: 8 },
+        bgcolor: 'background.paper',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 3,
       }}
     >
-      <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-          <Link to={`/technologies/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-            <Typography variant="h6">{title}</Typography>
+      <CardContent sx={{ pb: 1 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+          <Link
+            to={`/technologies/${id}`}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              {title}
+            </Typography>
           </Link>
-          <Chip 
+
+          <Chip
             icon={getStatusIcon()}
             label={getStatusText()}
             color={getStatusColor()}
             size="small"
+            sx={{ ml: 1 }}
           />
         </Box>
 
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {description || 'Без описания'}
         </Typography>
 
         {deadline && (
-          <Typography variant="caption" color="primary" sx={{ display: 'block', mb: 1 }}>
+          <Typography variant="caption" color="primary.main" sx={{ display: 'block', mb: 2 }}>
             Срок: {deadline}
           </Typography>
         )}
 
-        <TechnologyNotes
-          notes={notes || ''}
-          onNotesChange={onNotesChange}
-          techId={id}
-        />
+        {/* Заметки — клик не меняет статус */}
+        <Box onClick={(e) => e.stopPropagation()}>
+          <TechnologyNotes
+            notes={notes || ''}
+            onNotesChange={onNotesChange}
+            techId={id}
+          />
+        </Box>
       </CardContent>
 
-      <Box sx={{ p: 1, textAlign: 'right' }}>
-        <Button color="error" size="small" onClick={handleDelete}>
+      <Box sx={{ p: 2, pt: 0, textAlign: 'right' }}>
+        <Button
+          size="small"
+          color="error"
+          variant="text"
+          onClick={handleDelete}
+        >
           Удалить
         </Button>
       </Box>
