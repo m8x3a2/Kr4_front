@@ -1,16 +1,15 @@
-// src/hooks/useTechnologies.js
+// src/hooks/useTechnologies.js (обновленный: добавляем deadline в структуру)
 
 import useLocalStorage from './useLocalStorage';
 
 const initialTechnologies = [
-  { id: 1, title: 'React Components', description: 'Базовые компоненты React', status: 'not-started', notes: ''},
-  { id: 2, title: 'JSX и пропсы', description: 'Синтаксис и передача данных', status: 'not-started', notes: '' },
-  { id: 3, title: 'useState & useEffect', description: 'Управление состоянием', status: 'not-started', notes: ''},
-  { id: 4, title: 'Node.js Basics', description: 'Основы серверного JS', status: 'not-started', notes: '' },
-  { id: 5, title: 'Express.js', description: 'Веб-фреймворк для Node.js', status: 'not-started', notes: ''},
-  { id: 6, title: 'REST API', description: 'Проектирование API', status: 'not-started', notes: '' },
+  { id: 1, title: 'React Components', description: 'Базовые компоненты React', status: 'not-started', notes: '', deadline: '' },
+  { id: 2, title: 'JSX и пропсы', description: 'Синтаксис и передача данных', status: 'not-started', notes: '', deadline: '' },
+  { id: 3, title: 'useState & useEffect', description: 'Управление состоянием', status: 'not-started', notes: '', deadline: '' },
+  { id: 4, title: 'Node.js Basics', description: 'Основы серверного JS', status: 'not-started', notes: '', deadline: '' },
+  { id: 5, title: 'Express.js', description: 'Веб-фреймворк для Node.js', status: 'not-started', notes: '', deadline: '' },
+  { id: 6, title: 'REST API', description: 'Проектирование API', status: 'not-started', notes: '', deadline: '' },
 ];
-
 
 function useTechnologies() {
   const [technologies, setTechnologies] = useLocalStorage('technologies', initialTechnologies);
@@ -23,9 +22,12 @@ function useTechnologies() {
     setTechnologies(prev => prev.map(t => t.id === id ? { ...t, notes } : t));
   };
 
-  // ←←←←←←←←←←←←←←← ЭТОТ МЕТОД БЫЛ ПРОПУЩЕН! ←←←←←←←←←←←←←←←
+  const updateDeadline = (id, deadline) => {
+    setTechnologies(prev => prev.map(t => t.id === id ? { ...t, deadline } : t));
+  };
+
   const addTechnology = (newTech) => {
-    setTechnologies(prev => [...prev, { ...newTech, id: Date.now() }]);
+    setTechnologies(prev => [...prev, { ...newTech, id: Date.now(), deadline: newTech.deadline || '' }]);
   };
 
   const deleteTechnology = (id) => {
@@ -55,10 +57,11 @@ function useTechnologies() {
 
   return {
     technologies,
-    addTechnology,        // ←←←←←←←←←←←←←←← ВОТ ЭТОТ МЕТОД ДОБАВЬ!
-    deleteTechnology,     // ←←←←←←←←←←←←←← (по желанию, пригодится позже)
+    addTechnology,
+    deleteTechnology,
     updateStatus,
     updateNotes,
+    updateDeadline, // Новый метод
     markAllCompleted,
     resetAll,
     selectRandomNext,

@@ -1,4 +1,4 @@
-// src/pages/TechnologyDetail.js
+// src/pages/TechnologyDetail.js (обновленный: добавляем форму для deadline - Задание 1)
 
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -6,8 +6,8 @@ import useTechnologies from '../hooks/useTechnologies';
 
 function TechnologyDetail() {
   const { id } = useParams();
-  const { technologies, updateStatus } = useTechnologies();
   const techId = parseInt(id);
+  const { technologies, updateStatus, updateDeadline } = useTechnologies();
 
   const technology = technologies.find(t => t.id === techId);
 
@@ -15,7 +15,10 @@ function TechnologyDetail() {
   const [loadingResources, setLoadingResources] = useState(false);
   const [errorResources, setErrorResources] = useState(null);
 
-  // ←←← ВОТ ГЛАВНОЕ ИЗМЕНЕНИЕ: загружаем ресурсы ТОЛЬКО для id от 1 до 10
+  // Форма для deadline
+  const [deadlineForm, setDeadlineForm] = useState(technology?.deadline || '');
+  const [deadlineError, setDeadlineError] = useState(null);
+
   useEffect(() => {
     const shouldLoadResources = techId >= 1 && techId <= 10;
 
@@ -61,6 +64,34 @@ function TechnologyDetail() {
 
   const handleStatusChange = (newStatus) => {
     updateStatus(techId, newStatus);
+  };
+
+  const validateDeadline = (date) => {
+    if (!date) return null;
+    const selectedDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+      return 'Срок не может быть в прошлом';
+    }
+    return null;
+  };
+
+  const handleDeadlineChange = (e) => {
+    const value = e.target.value;
+    setDeadlineForm(value);
+    setDeadlineError(validateDeadline(value));
+  };
+
+  const handleDeadlineSubmit = (e) => {
+    e.preventDefault();
+    const error = validateDeadline(deadlineForm);
+    if (error) {
+      setDeadlineError(error);
+      return;
+    }
+    updateDeadline(techId, deadlineForm);
+    alert('Срок обновлен!');
   };
 
   return (
@@ -118,7 +149,64 @@ function TechnologyDetail() {
         </div>
       )}
 
-      {/* ←←← Блок с ресурсами теперь показывается ТОЛЬКО для демо-карточек */}
+      {/* Форма для установки срока (Задание 1) */}
+      <div style={{ marginTop: '40px' }}>
+        <h3>Установить срок изучения</h3>
+        <form onSubmit={handleDeadlineSubmit} noValidate>
+          <div style={{ marginBottom: '20px' }}>
+            <label 
+              htmlFor="deadline"
+              style={{
+                display: 'block',
+                marginBottom: '8px',
+                fontWeight: '600'
+              }}
+            >
+              Выберите дату
+            </label>
+            <input
+              id="deadline"
+              type="date"
+              value={deadlineForm}
+              onChange={handleDeadlineChange}
+              min={new Date().toISOString().split('T')[0]}
+              aria-invalid={!!deadlineError}
+              aria-describedby={deadlineError ? 'deadline-error' : undefined}
+              style={{
+                padding: '10px',
+                borderRadius: '6px',
+                border: deadlineError ? '1px solid #e74c3c' : '1px solid #ddd',
+                width: '200px'
+              }}
+            />
+            {deadlineError && (
+              <p id="deadline-error" style={{ color: '#e74c3c', marginTop: '8px' }} role="alert">
+                {deadlineError}
+              </p>
+            )}
+          </div>
+          <button 
+            type="submit" 
+            disabled={!!deadlineError || !deadlineForm}
+            style={{
+              background: (!!deadlineError || !deadlineForm) ? '#95a5a6' : '#27ae60',
+              color: 'white',
+              padding: '10px 20px',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer'
+            }}
+          >
+            Сохранить срок
+          </button>
+        </form>
+        {technology.deadline && (
+          <p style={{ marginTop: '15px', color: '#555' }}>
+            Текущий срок: {technology.deadline}
+          </p>
+        )}
+      </div>
+
       {techId >= 1 && techId <= 10 && (
         <div style={{ marginTop: '40px' }}>
           <h3>Дополнительные ресурсы</h3>

@@ -1,10 +1,10 @@
-// src/components/TechnologyCard.jsx
+// src/components/TechnologyCard.jsx (обновленный: добавляем место для deadline)
 
 import { Link } from 'react-router-dom';
 import TechnologyNotes from './TechnologyNotes';
 
 function TechnologyCard({ technology, onStatusChange, onNotesChange, onDelete }) {
-  const { id, title, description, status, notes } = technology;
+  const { id, title, description, status, notes, deadline } = technology;
 
   const nextStatus = {
     'not-started': 'in-progress',
@@ -12,10 +12,8 @@ function TechnologyCard({ technology, onStatusChange, onNotesChange, onDelete })
     'completed': 'not-started'
   };
 
-  // Клик по карточке (но НЕ по названию и НЕ по кнопке удалить) → меняет статус
   const handleCardClick = (e) => {
-    // Если кликнули по ссылке с названием — не меняем статус
-    if (e.target.closest('a') || e.target.closest('h3') || e.target.closest('button')) {
+    if (e.target.closest('a') || e.target.closest('h3') || e.target.closest('button') || e.target.closest('input')) {
       return;
     }
     onStatusChange(id, nextStatus[status]);
@@ -43,16 +41,14 @@ function TechnologyCard({ technology, onStatusChange, onNotesChange, onDelete })
       style={{ cursor: 'pointer' }}
     >
       <div className="technology-header">
-        {/* Название — ссылка на детальную страницу */}
         <Link
           to={`/technologies/${id}`}
           style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}
-          onClick={(e) => e.stopPropagation()} // отменяем смену статуса при клике по названию
+          onClick={(e) => e.stopPropagation()}
         >
           <h3 style={{ margin: 0, fontSize: '1.3em' }}>{title}</h3>
         </Link>
 
-        {/* Статус — справа */}
         <span className="status-badge">
           {getStatusText()}
         </span>
@@ -62,7 +58,12 @@ function TechnologyCard({ technology, onStatusChange, onNotesChange, onDelete })
         {description || 'Без описания'}
       </p>
 
-      {/* Подсказка */}
+      {deadline && (
+        <p style={{ color: '#555', fontSize: '0.95em', margin: '8px 0' }}>
+          Срок: {deadline}
+        </p>
+      )}
+
       <div style={{
         margin: '12px 0',
         fontSize: '0.9em',
@@ -72,7 +73,6 @@ function TechnologyCard({ technology, onStatusChange, onNotesChange, onDelete })
         Клик по карточке → сменить статус • Клик по названию → открыть детали
       </div>
 
-      {/* Заметки */}
       <div onClick={(e) => e.stopPropagation()}>
         <TechnologyNotes
           notes={notes || ''}
@@ -81,7 +81,6 @@ function TechnologyCard({ technology, onStatusChange, onNotesChange, onDelete })
         />
       </div>
 
-      {/* Кнопка Удалить */}
       <div onClick={(e) => e.stopPropagation()} style={{ marginTop: '15px', textAlign: 'right' }}>
         <button
           onClick={handleDelete}

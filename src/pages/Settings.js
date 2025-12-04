@@ -1,5 +1,6 @@
-// src/pages/Settings.js
-import { useRef } from 'react';
+// src/pages/Settings.js (обновленный с drag-and-drop для импорта по тетради)
+
+import { useRef, useState } from 'react';
 import useTechnologies from '../hooks/useTechnologies';
 
 function Settings() {
@@ -8,12 +9,14 @@ function Settings() {
     markAllCompleted, 
     resetAll, 
     clearAllNotes,
-    setTechnologies // ← это важно! позволяет полностью заменить данные
+    setTechnologies
   } = useTechnologies();
 
   const fileInputRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [importError, setImportError] = useState(null);
 
-  // ЭКСПОРТ — скачивает файл
+  // ЭКСПОРТ — скачивает файл (остается как есть)
   const handleExport = () => {
     const data = {
       exportedAt: new Date().toLocaleString('ru-RU'),
@@ -36,9 +39,8 @@ function Settings() {
     alert('Файл успешно скачан!');
   };
 
-  // ИМПОРТ — читает выбранный файл
-  const handleImport = (event) => {
-    const file = event.target.files[0];
+  // ИМПОРТ — общая функция для обработки файла
+  const processImport = (file) => {
     if (!file) return;
 
     const reader = new FileReader();
@@ -47,11 +49,16 @@ function Settings() {
         const data = JSON.parse(e.target.result);
 
         if (!data.technologies || !Array.isArray(data.technologies)) {
-          alert('Ошибка: файл не содержит данные технологий');
-          return;
+          throw new Error('Файл не содержит данные технологий');
         }
 
-        // Подтверждение перед заменой
+        // Валидация каждой технологии
+        data.technologies.forEach(tech => {
+          if (!tech.title || tech.title.trim().length < 2) {
+            throw new Error('Одна из технологий имеет некорректное название');
+          }
+        });
+
         if (!window.confirm(
           `Внимание!\n\n` +
           `Сейчас в трекере: ${technologies.length} технологий\n` +
@@ -62,14 +69,44 @@ function Settings() {
         }
 
         setTechnologies(data.technologies);
-        alert(`Успешно импортировано ${data.technologies.length} технологий!`);
+        alert('Данные успешно импортированы!');
       } catch (err) {
-        alert('Ошибка чтения файла. Убедитесь, что это правильный JSON от трекера.');
-        console.error(err);
+        setImportError(err.message);
       }
     };
-
     reader.readAsText(file);
+  };
+
+  // Drag-and-drop handlers
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    setImportError(null);
+    
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/json') {
+      processImport(file);
+    } else {
+      setImportError('Некорректный тип файла. Требуется JSON.');
+    }
+  };
+
+  const handleFileSelect = (e) => {
+    setImportError(null);
+    const file = e.target.files[0];
+    if (file) {
+      processImport(file);
+    }
   };
 
   const triggerFileInput = () => {
@@ -106,17 +143,40 @@ function Settings() {
             Скачать резервную копию (JSON)
           </button>
 
-          <button onClick={triggerFileInput} className="btn" style={{ background: '#9b59b6' }}>
-            Загрузить из файла
-          </button>
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            style={{
+              border: `2px dashed ${isDragging ? '#3498db' : '#ddd'}`,
+              borderRadius: '8px',
+              padding: '20px',
+              textAlign: 'center',
+              background: isDragging ? '#f8f9fa' : 'transparent',
+              transition: 'all 0.3s ease'
+            }}
+            role="region"
+            aria-label="Зона для перетаскивания файла"
+          >
+            <p>Перетащите JSON файл сюда или</p>
+            <button onClick={triggerFileInput} className="btn" style={{ background: '#9b59b6' }}>
+              Выберите файл
+            </button>
+          </div>
 
           <input
             ref={fileInputRef}
             type="file"
             accept=".json,application/json"
-            onChange={handleImport}
+            onChange={handleFileSelect}
             style={{ display: 'none' }}
           />
+
+          {importError && (
+            <p style={{ color: '#e74c3c', marginTop: '10px' }} role="alert">
+              {importError}
+            </p>
+          )}
         </div>
 
         <small style={{ display: 'block', marginTop: '15px', color: '#7f8c8d' }}>
