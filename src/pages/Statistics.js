@@ -1,6 +1,6 @@
-// src/pages/Statistics.js
+// src/pages/Statistics.js (обновленный с MUI)
+import { Box, Typography, LinearProgress, Paper } from '@mui/material';
 import useTechnologies from '../hooks/useTechnologies';
-import ProgressBar from '../components/ProgressBar';
 
 function Statistics() {
   const { technologies, progress } = useTechnologies();
@@ -8,41 +8,35 @@ function Statistics() {
   const completed = technologies.filter(t => t.status === 'completed').length;
   const inProgress = technologies.filter(t => t.status === 'in-progress').length;
   const notStarted = technologies.filter(t => t.status === 'not-started').length;
-
   const total = technologies.length;
 
   return (
-    <div className="page">
-      <h1>Статистика прогресса</h1>
+    <Paper sx={{ p: 3 }}>
+      <Typography variant="h5" gutterBottom>Статистика</Typography>
 
-      <ProgressBar progress={progress} label="Общий прогресс" color="#4caf50" />
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="subtitle1">Общий прогресс</Typography>
+        <LinearProgress variant="determinate" value={progress} color="secondary" sx={{ height: 10, borderRadius: 5, mt: 1 }} />
+        <Typography variant="body2" sx={{ textAlign: 'right', mt: 0.5 }}>{progress}%</Typography>
+      </Box>
 
-      <div style={{ marginTop: '40px' }}>
-        <h2>По статусам</h2>
+      <Box sx={{ display: 'grid', gap: 2 }}>
+        <Box>
+          <Typography variant="subtitle1">Изучено: {completed}</Typography>
+          <LinearProgress variant="determinate" value={(completed / total) * 100 || 0} color="success" sx={{ height: 8, borderRadius: 5 }} />
+        </Box>
+        <Box>
+          <Typography variant="subtitle1">В процессе: {inProgress}</Typography>
+          <LinearProgress variant="determinate" value={(inProgress / total) * 100 || 0} color="warning" sx={{ height: 8, borderRadius: 5 }} />
+        </Box>
+        <Box>
+          <Typography variant="subtitle1">Не начато: {notStarted}</Typography>
+          <LinearProgress variant="determinate" value={(notStarted / total) * 100 || 0} color="error" sx={{ height: 8, borderRadius: 5 }} />
+        </Box>
+      </Box>
 
-        <ProgressBar
-          progress={total ? Math.round((completed / total) * 100) : 0}
-          label={`Изучено: ${completed}`}
-          color="#27ae60"
-        />
-
-        <ProgressBar
-          progress={total ? Math.round((inProgress / total) * 100) : 0}
-          label={`В процессе: ${inProgress}`}
-          color="#f39c12"
-        />
-
-        <ProgressBar
-          progress={total ? Math.round((notStarted / total) * 100) : 0}
-          label={`Не начато: ${notStarted}`}
-          color="#e74c3c"
-        />
-      </div>
-
-      <div style={{ marginTop: '40px', fontSize: '1.1em', lineHeight: '1.8' }}>
-        <p>Всего технологий в трекере: <strong>{total}</strong></p>
-      </div>
-    </div>
+      <Typography variant="body1" sx={{ mt: 3 }}>Всего: <strong>{total}</strong></Typography>
+    </Paper>
   );
 }
 

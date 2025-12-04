@@ -1,4 +1,5 @@
-// src/hooks/useTechnologiesApi.js
+// src/hooks/useTechnologiesApi.js — с таймаутом 8 сек
+
 import { useState, useEffect } from 'react';
 
 function useTechnologiesApi() {
@@ -7,32 +8,47 @@ function useTechnologiesApi() {
   const [error, setError] = useState(null);
 
   const fetchTechnologies = async () => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 секунд
+
     try {
       setLoading(true);
       setError(null);
-      
-      const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=10');
-      
+
+      const response = await fetch(
+        'https://jsonplaceholder.typicode.com/posts?_limit=10',
+        { signal: controller.signal }
+      );
+
+      clearTimeout(timeoutId); // очищаем таймер, если успел
+
       if (!response.ok) {
         throw new Error(`Ошибка HTTP: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      
-      // Маппинг данных из API на структуру технологий
+
       const mappedTechs = data.map((post, index) => ({
         id: post.id,
-        title: post.title.substring(0, 30), // Укорачиваем для примера
-        description: post.body.substring(0, 100),
+        title: post.title.substring(0, 40),
+        description: post.body.substring(0, 120),
         status: index % 3 === 0 ? 'completed' : index % 3 === 1 ? 'in-progress' : 'not-started',
-        notes: ''
+        notes: '',
+        deadline: ''
       }));
-      
+
       setTechnologies(mappedTechs);
-      
+
     } catch (err) {
-      setError(err.message);
-      console.error('Ошибка при загрузке технологий:', err);
+      clearTimeout(timeoutId);
+
+      if (err.name === 'AbortError') {
+        setError('Превышен таймаут загрузки (8 сек)');
+      } else if (!navigator.onLine) {
+        setError('Нет подключения к интернету');
+      } else {
+        setError(err.message || 'Не удалось загрузить данные');
+      }
     } finally {
       setLoading(false);
     }

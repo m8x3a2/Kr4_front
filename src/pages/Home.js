@@ -1,18 +1,63 @@
+import { Box, Container, Typography } from '@mui/material';
+
 function Home() {
   return (
-    <div className="page">
-      <h1>Добро пожаловать в трекер технологий!</h1>
-      <p>Здесь вы можете отслеживать свой прогресс изучения фронтенда и бэкенда.</p>
-      <div className="features">
-        <h2>Возможности:</h2>
-        <ul>
-          <li>Добавление новых технологий</li>
-          <li>Отметка статуса изучения</li>
-          <li>Просмотр детальной информации</li>
-          <li>Данные сохраняются в localStorage</li>
-        </ul>
-      </div>
-    </div>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        py: { xs: 4, md: 8 },
+        bgcolor: 'background.default',
+        color: 'text.primary',
+      }}
+    >
+      <Container maxWidth="md">
+        <Typography
+          variant="h3"
+          component="h1"
+          align="center"
+          gutterBottom
+          sx={{ fontWeight: 700, mb: 4 }}
+        >
+          Добро пожаловать в трекер технологий!
+        </Typography>
+
+        <Typography
+          variant="h6"
+          align="center"
+          color="text.secondary"
+          paragraph
+          sx={{ mb: 6 }}
+        >
+          Здесь вы можете отслеживать свой прогресс изучения фронтенда и бэкенда.
+        </Typography>
+
+        <Box sx={{ mt: 8 }}>
+          <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
+            Возможности приложения:
+          </Typography>
+
+          <Box
+            component="ul"
+            sx={{
+              pl: 4,
+              fontSize: '1.2rem',
+              lineHeight: 2.2,
+              '& li': { mb: 1 }
+            }}
+          >
+            <li>Добавление и удаление технологий</li>
+            <li>Отметка статуса: Не начато → В процессе → Изучено</li>
+            <li>Заметки к каждой технологии</li>
+            <li>Установка дедлайнов</li>
+            <li>Прогресс-бар и статистика</li>
+            <li>Массовое редактирование (галочки)</li>
+            <li>Тёмная / светлая тема</li>
+            <li>Snackbar-уведомления</li>
+            <li>Экспорт и импорт данных</li>
+          </Box>
+        </Box>
+      </Container>
+    </Box>
   );
 }
 

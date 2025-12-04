@@ -1,10 +1,44 @@
-// src/components/TechnologyCard.jsx (обновленный: добавляем место для deadline)
-
+// src/components/TechnologyCard.jsx (обновленный с MUI)
 import { Link } from 'react-router-dom';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Chip,
+  Box,
+  Button
+} from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import TechnologyNotes from './TechnologyNotes';
 
 function TechnologyCard({ technology, onStatusChange, onNotesChange, onDelete }) {
   const { id, title, description, status, notes, deadline } = technology;
+
+  const getStatusColor = () => {
+    switch (status) {
+      case 'completed': return 'success';
+      case 'in-progress': return 'warning';
+      default: return 'default';
+    }
+  };
+
+  const getStatusText = () => {
+    switch (status) {
+      case 'completed': return 'Изучено';
+      case 'in-progress': return 'В процессе';
+      default: return 'Не начато';
+    }
+  };
+
+  const getStatusIcon = () => {
+    switch (status) {
+      case 'completed': return <CheckCircleIcon />;
+      case 'in-progress': return <HourglassEmptyIcon />;
+      default: return <PlayCircleOutlineIcon />;
+    }
+  };
 
   const nextStatus = {
     'not-started': 'in-progress',
@@ -13,91 +47,63 @@ function TechnologyCard({ technology, onStatusChange, onNotesChange, onDelete })
   };
 
   const handleCardClick = (e) => {
-    if (e.target.closest('a') || e.target.closest('h3') || e.target.closest('button') || e.target.closest('input')) {
+    if (e.target.closest('a') || e.target.closest('button') || e.target.closest('input')) {
       return;
     }
     onStatusChange(id, nextStatus[status]);
   };
 
   const handleDelete = () => {
-    if (window.confirm(`Удалить технологию "${title}"?`)) {
+    if (window.confirm(`Удалить "${title}"?`)) {
       onDelete(id);
     }
   };
 
-  const getStatusText = () => {
-    switch (status) {
-      case 'completed': return 'Изучено';
-      case 'in-progress': return 'В процессе';
-      case 'not-started': return 'Не начато';
-      default: return 'Не начато';
-    }
-  };
-
   return (
-    <div
-      className={`technology-card status-${status}`}
+    <Card 
       onClick={handleCardClick}
-      style={{ cursor: 'pointer' }}
+      sx={{ 
+        cursor: 'pointer',
+        '&:hover': { boxShadow: 6 },
+        position: 'relative'
+      }}
     >
-      <div className="technology-header">
-        <Link
-          to={`/technologies/${id}`}
-          style={{ textDecoration: 'none', color: 'inherit', flex: 1 }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <h3 style={{ margin: 0, fontSize: '1.3em' }}>{title}</h3>
-        </Link>
+      <CardContent>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+          <Link to={`/technologies/${id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Typography variant="h6">{title}</Typography>
+          </Link>
+          <Chip 
+            icon={getStatusIcon()}
+            label={getStatusText()}
+            color={getStatusColor()}
+            size="small"
+          />
+        </Box>
 
-        <span className="status-badge">
-          {getStatusText()}
-        </span>
-      </div>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+          {description || 'Без описания'}
+        </Typography>
 
-      <p className="technology-description">
-        {description || 'Без описания'}
-      </p>
+        {deadline && (
+          <Typography variant="caption" color="primary" sx={{ display: 'block', mb: 1 }}>
+            Срок: {deadline}
+          </Typography>
+        )}
 
-      {deadline && (
-        <p style={{ color: '#555', fontSize: '0.95em', margin: '8px 0' }}>
-          Срок: {deadline}
-        </p>
-      )}
-
-      <div style={{
-        margin: '12px 0',
-        fontSize: '0.9em',
-        color: '#27ae60',
-        fontWeight: '500'
-      }}>
-        Клик по карточке → сменить статус • Клик по названию → открыть детали
-      </div>
-
-      <div onClick={(e) => e.stopPropagation()}>
         <TechnologyNotes
           notes={notes || ''}
           onNotesChange={onNotesChange}
           techId={id}
         />
-      </div>
+      </CardContent>
 
-      <div onClick={(e) => e.stopPropagation()} style={{ marginTop: '15px', textAlign: 'right' }}>
-        <button
-          onClick={handleDelete}
-          style={{
-            background: '#e74c3c',
-            color: 'white',
-            border: 'none',
-            padding: '8px 14px',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontSize: '0.9em'
-          }}
-        >
+      <Box sx={{ p: 1, textAlign: 'right' }}>
+        <Button color="error" size="small" onClick={handleDelete}>
           Удалить
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Box>
+    </Card>
   );
 }
 

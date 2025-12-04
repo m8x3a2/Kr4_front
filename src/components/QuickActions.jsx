@@ -1,15 +1,17 @@
-import '../components/Modal.css';
 import { useState } from 'react';
+import { Button, Box, Snackbar, Alert, Typography } from '@mui/material'; // ← Typography добавлен
 import Modal from './Modal';
 
 function QuickActions({ 
   onMarkAllCompleted, 
   onResetAll, 
-  onSelectRandomNext,  // ← добавил (был onRandomNext, но сделал consistent)
-  onClearAllNotes,     // ← добавил
+  onSelectRandomNext,  
+  onClearAllNotes,     
   technologies 
 }) {
   const [showExportModal, setShowExportModal] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   const handleExport = () => {
     const data = {
@@ -20,34 +22,41 @@ function QuickActions({
     };
     console.log('Экспортированные данные:', JSON.stringify(data, null, 2));
     setShowExportModal(true);
+    setSnackbarMessage('Данные экспортированы в консоль!');
+    setSnackbarOpen(true);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
-    <div className="quick-actions">
-      <h3>Быстрые действия</h3>
-      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-        <button onClick={onMarkAllCompleted} style={{ background: '#27ae60', color: 'white' }}>
-          Отметить все как выполненные
-        </button>
-        <button onClick={onResetAll} style={{ background: '#e67e22', color: 'white' }}>
-          Сбросить все статусы
-        </button>
-        <button onClick={handleExport} style={{ background: '#3498db', color: 'white' }}>
-          Экспорт данных
-        </button>
-        <button onClick={onSelectRandomNext} style={{ background: '#9b59b6', color: 'white' }}>
-          Выбрать случайную следующую
-        </button>
-        <button onClick={onClearAllNotes} style={{ background: '#e74c3c', color: 'white' }}>
-          Очистить все заметки
-        </button>
-      </div>
+    <Box sx={{ my: 3 }}>
+      <Typography variant="h6" gutterBottom>Быстрые действия</Typography>
+      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+        <Button variant="contained" color="success" onClick={onMarkAllCompleted}>Отметить все завершёнными</Button>
+        <Button variant="contained" color="warning" onClick={onResetAll}>Сбросить статусы</Button>
+        <Button variant="contained" color="primary" onClick={handleExport}>Экспорт данных</Button>
+        <Button variant="contained" color="secondary" onClick={onSelectRandomNext}>Случайная следующая</Button>
+        <Button variant="contained" color="error" onClick={onClearAllNotes}>Очистить заметки</Button>
+      </Box>
 
       <Modal isOpen={showExportModal} onClose={() => setShowExportModal(false)} title="Экспорт завершён">
         <p>Данные успешно экспортированы!</p>
         <p>Откройте консоль разработчика (F12 → Console), чтобы увидеть JSON.</p>
       </Modal>
-    </div>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="success">
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </Box>
   );
 }
 

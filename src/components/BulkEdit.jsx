@@ -1,100 +1,88 @@
-// src/components/BulkEdit.jsx (новый: для массового редактирования статусов - Задание 2)
-// Добавьте этот файл в src/components, затем импортируйте в TechnologyList.js
+// src/components/BulkEdit.jsx — полностью на MUI, тёмная тема работает!
 
+import {
+  Box,
+  Paper,
+  Typography,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Button,
+  Stack
+} from '@mui/material';
 import { useState } from 'react';
 
 function BulkEdit({ selectedIds, onBulkUpdate, onClose }) {
   const [newStatus, setNewStatus] = useState('not-started');
-  const [error, setError] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (selectedIds.length === 0) {
-      setError('Выберите хотя бы одну технологию');
-      return;
-    }
     onBulkUpdate(selectedIds, newStatus);
     onClose();
   };
 
   return (
-    <div style={{
-      background: 'white',
-      padding: '20px',
-      borderRadius: '8px',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-      maxWidth: '400px',
-      margin: '20px auto'
-    }}>
-      <h3>Массовое редактирование</h3>
-      <p>Выбрано: {selectedIds.length} технологий</p>
-      
-      <form onSubmit={handleSubmit} noValidate>
-        <div style={{ marginBottom: '20px' }}>
-          <label 
-            htmlFor="status"
-            style={{
-              display: 'block',
-              marginBottom: '8px',
-              fontWeight: '600'
-            }}
-          >
-            Новый статус
-          </label>
-          <select
-            id="status"
+    <Paper
+      elevation={12}
+      sx={{
+        p: 4,
+        borderRadius: 3,
+        maxWidth: 420,
+        width: '90vw',
+        bgcolor: 'background.paper',   // ← автоматически тёмный/светлый фон
+        color: 'text.primary',
+      }}
+    >
+      <Typography variant="h5" component="h3" gutterBottom align="center">
+        Массовое редактирование
+      </Typography>
+
+      <Typography variant="body1" align="center" color="text.secondary" sx={{ mb: 3 }}>
+        Выбрано технологий: <strong>{selectedIds.length}</strong>
+      </Typography>
+
+      <Box component="form" onSubmit={handleSubmit}>
+        <FormControl fullWidth sx={{ mb: 4 }}>
+          <InputLabel id="bulk-status-label">Новый статус</InputLabel>
+          <Select
+            labelId="bulk-status-label"
             value={newStatus}
+            label="Новый статус"
             onChange={(e) => setNewStatus(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '10px',
-              borderRadius: '6px',
-              border: '1px solid #ddd'
-            }}
+            sx={{ borderRadius: 2 }}
           >
-            <option value="not-started">Не начато</option>
-            <option value="in-progress">В процессе</option>
-            <option value="completed">Изучено</option>
-          </select>
-        </div>
+            <MenuItem value="not-started">Не начато</MenuItem>
+            <MenuItem value="in-progress">В процессе</MenuItem>
+            <MenuItem value="completed">Изучено</MenuItem>
+          </Select>
+        </FormControl>
 
-        {error && (
-          <p style={{ color: '#e74c3c', marginBottom: '10px' }} role="alert">
-            {error}
-          </p>
-        )}
-
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button 
+        <Stack direction="row" spacing={2}>
+          <Button
             type="submit"
-            style={{
-              background: '#27ae60',
-              color: 'white',
-              padding: '10px 20px',
-              border: 'none',
-              borderRadius: '6px',
-              flex: 1
-            }}
+            variant="contained"
+            color="success"
+            size="large"
+            fullWidth
+            sx={{ py: 1.5 }}
           >
             Применить
-          </button>
-          <button 
-            type="button"
+          </Button>
+
+          <Button
+            variant="contained"
+            color="inherit"
+            size="large"
+            fullWidth
             onClick={onClose}
-            style={{
-              background: '#95a5a6',
-              color: 'white',
-              padding: '10px 20px',
-              border: 'none',
-              borderRadius: '6px',
-              flex: 1
-            }}
+            sx={{ py: 1.5, bgcolor: 'grey.500', '&:hover': { bgcolor: 'grey.600' } }}
           >
             Отмена
-          </button>
-        </div>
-      </form>
-    </div>
+          </Button>
+        </Stack>
+      </Box>
+    </Paper>
   );
 }
 

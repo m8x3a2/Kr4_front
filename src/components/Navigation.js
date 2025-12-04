@@ -1,21 +1,40 @@
-// src/components/Navigation.js
+// src/components/Navigation.js (обновленный с MUI и переключателем темы)
 import { NavLink } from 'react-router-dom';
-import './Navigation.css'; // создадим новый файл
+import { AppBar, Toolbar, Typography, Box, Switch, FormControlLabel } from '@mui/material';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import './Navigation.css'; // Сохраняем, но MUI переопределит
 
-function Navigation() {
+function Navigation({ toggleDarkMode, darkMode }) {
   return (
-    <nav className="top-nav">
-      <div className="nav-container">
-        <h1 className="nav-logo">Трекер технологий</h1>
-        <ul className="nav-menu">
-          <li><NavLink to="/" end className={({ isActive }) => isActive ? 'active' : ''}>Главная</NavLink></li>
-          <li><NavLink to="/technologies" className={({ isActive }) => isActive ? 'active' : ''}>Список технологий</NavLink></li>
-          <li><NavLink to="/add" className={({ isActive }) => isActive ? 'active' : ''}>Добавить технологию</NavLink></li>
-          <li><NavLink to="/statistics" className={({ isActive }) => isActive ? 'active' : ''}>Статистика</NavLink></li>
-          <li><NavLink to="/settings" className={({ isActive }) => isActive ? 'active' : ''}>Настройки</NavLink></li>
-        </ul>
-      </div>
-    </nav>
+    <AppBar position="sticky" color="primary">
+      <Toolbar sx={{ justifyContent: 'space-between' }}>
+        <Typography variant="h6" component="div">
+          Трекер технологий
+        </Typography>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+          <NavLink to="/" style={{ color: 'inherit', textDecoration: 'none' }}>Главная</NavLink>
+          <NavLink to="/technologies" style={{ color: 'inherit', textDecoration: 'none' }}>Список</NavLink>
+          <NavLink to="/add" style={{ color: 'inherit', textDecoration: 'none' }}>Добавить</NavLink>
+          <NavLink to="/statistics" style={{ color: 'inherit', textDecoration: 'none' }}>Статистика</NavLink>
+          <NavLink to="/settings" style={{ color: 'inherit', textDecoration: 'none' }}>Настройки</NavLink>
+          
+          <FormControlLabel
+            control={
+              <Switch
+                checked={darkMode}
+                onChange={toggleDarkMode}
+                icon={<LightModeIcon />}
+                checkedIcon={<DarkModeIcon />}
+              />
+            }
+            label="Тёмная тема"
+            labelPlacement="start"
+          />
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 }
 

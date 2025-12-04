@@ -1,191 +1,109 @@
-// src/pages/AddTechnology.js (обновленный с валидацией, ошибками и доступностью)
-
+// src/pages/AddTechnology.js (обновленный с MUI)
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Snackbar,
+  Alert,
+  Paper
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import useTechnologies from '../hooks/useTechnologies';
 
 function AddTechnology() {
+  const [formData, setFormData] = useState({ title: '', description: '' });
+  const [errors, setErrors] = useState({});
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+
   const { addTechnology } = useTechnologies();
   const navigate = useNavigate();
 
-  // Состояние формы
-  const [formData, setFormData] = useState({
-    title: '',
-    description: ''
-  });
-
-  // Состояние ошибок
-  const [errors, setErrors] = useState({});
-  const [isFormValid, setIsFormValid] = useState(false);
-
-  // Валидация формы
   const validateForm = (data) => {
     const newErrors = {};
-
-    // Валидация названия
-    if (!data.title.trim()) {
-      newErrors.title = 'Название технологии обязательно';
-    } else if (data.title.trim().length < 2) {
-      newErrors.title = 'Название должно быть не менее 2 символов';
-    } else if (data.title.trim().length > 50) {
-      newErrors.title = 'Название не должно превышать 50 символов';
-    }
-
-    // Валидация описания (опционально)
-    if (data.description.trim() && data.description.trim().length > 500) {
-      newErrors.description = 'Описание не должно превышать 500 символов';
-    }
-
+    if (!data.title.trim()) newErrors.title = 'Название обязательно';
+    else if (data.title.length < 2) newErrors.title = 'Минимум 2 символа';
+    else if (data.title.length > 50) newErrors.title = 'Максимум 50 символов';
+    if (data.description.length > 500) newErrors.description = 'Максимум 500 символов';
     setErrors(newErrors);
     setIsFormValid(Object.keys(newErrors).length === 0);
   };
 
-  // Обработчик изменений
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    const newData = { ...formData, [name]: value };
+    const newData = { ...formData, [e.target.name]: e.target.value };
     setFormData(newData);
     validateForm(newData);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    validateForm(formData);
-
     if (isFormValid) {
       addTechnology({
-        title: formData.title.trim(),
-        description: formData.description.trim(),
+        ...formData,
         status: 'not-started',
         notes: ''
       });
+      setSnackbarOpen(true);
       navigate('/technologies');
     }
   };
 
   return (
-    <div className="page">
-      <div className="page-header" style={{ marginBottom: '30px' }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: '2em', color: '#2c3e50' }}>
-            Добавить технологию
-          </h1>
-        </div>
-        <Link to="/technologies" className="back-link">
+    <Paper elevation={3} sx={{ p: 3, maxWidth: 700, mx: 'auto' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+        <Typography variant="h5">Добавить технологию</Typography>
+        <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/technologies')}>
           Назад
-        </Link>
-      </div>
+        </Button>
+      </Box>
 
-      <form onSubmit={handleSubmit} style={{ maxWidth: '700px' }} noValidate>
-        <div style={{ marginBottom: '24px' }}>
-          <label 
-            htmlFor="title"
-            style={{
-              display: 'block',
-              marginBottom: '10px',
-              fontWeight: '600',
-              color: '#2c3e50'
-            }}
-          >
-            Название технологии
-          </label>
-          <input
-            id="title"
-            name="title"
-            type="text"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Например: TypeScript, Docker, GraphQL..."
-            required
-            aria-invalid={!!errors.title}
-            aria-describedby={errors.title ? 'title-error' : undefined}
-            style={{
-              width: '100%',
-              padding: '14px',
-              fontSize: '1.1em',
-              borderRadius: '8px',
-              border: errors.title ? '1px solid #e74c3c' : '1px solid #ddd',
-              boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)'
-            }}
-          />
-          {errors.title && (
-            <p id="title-error" style={{ color: '#e74c3c', marginTop: '8px', fontSize: '0.9em' }} role="alert">
-              {errors.title}
-            </p>
-          )}
-        </div>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          fullWidth
+          label="Название"
+          name="title"
+          value={formData.title}
+          onChange={handleChange}
+          error={!!errors.title}
+          helperText={errors.title}
+          sx={{ mb: 3 }}
+        />
 
-        <div style={{ marginBottom: '30px' }}>
-          <label 
-            htmlFor="description"
-            style={{
-              display: 'block',
-              marginBottom: '10px',
-              fontWeight: '600',
-              color: '#2c3e50'
-            }}
-          >
-            Описание (необязательно)
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Зачем учить эту технологию? Краткое описание..."
-            rows="4"
-            aria-invalid={!!errors.description}
-            aria-describedby={errors.description ? 'description-error' : undefined}
-            style={{
-              width: '100%',
-              padding: '14px',
-              fontSize: '1.05em',
-              borderRadius: '8px',
-              border: errors.description ? '1px solid #e74c3c' : '1px solid #ddd',
-              resize: 'vertical',
-              fontFamily: 'inherit'
-            }}
-          />
-          {errors.description && (
-            <p id="description-error" style={{ color: '#e74c3c', marginTop: '8px', fontSize: '0.9em' }} role="alert">
-              {errors.description}
-            </p>
-          )}
-        </div>
+        <TextField
+          fullWidth
+          multiline
+          rows={4}
+          label="Описание"
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          error={!!errors.description}
+          helperText={errors.description}
+          sx={{ mb: 3 }}
+        />
 
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button
-            type="submit"
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button 
+            type="submit" 
+            variant="contained" 
+            color="secondary" 
             disabled={!isFormValid}
-            className="btn"
-            style={{
-              background: isFormValid ? '#27ae60' : '#95a5a6',
-              padding: '12px 24px',
-              fontSize: '1.05em',
-              fontWeight: '600'
-            }}
           >
-            Добавить технологию
-          </button>
-
-          <Link
-            to="/technologies"
-            style={{
-              padding: '12px 24px',
-              background: '#95a5a6',
-              color: 'white',
-              textDecoration: 'none',
-              borderRadius: '6px',
-              fontSize: '1.05em',
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
+            Добавить
+          </Button>
+          <Button variant="outlined" onClick={() => navigate('/technologies')}>
             Отмена
-          </Link>
-        </div>
+          </Button>
+        </Box>
       </form>
-    </div>
+
+      <Snackbar open={snackbarOpen} autoHideDuration={4000} onClose={() => setSnackbarOpen(false)}>
+        <Alert severity="success">Технология добавлена!</Alert>
+      </Snackbar>
+    </Paper>
   );
 }
 
