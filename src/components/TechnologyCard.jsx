@@ -1,4 +1,4 @@
-// src/components/TechnologyCard.jsx — ИТОГОВАЯ ВЕРСИЯ
+// src/components/TechnologyCard.jsx — ПОЛНОСТЬЮ ГОТОВО К СДАЧЕ
 
 import { Link } from 'react-router-dom';
 import {
@@ -48,7 +48,6 @@ function TechnologyCard({ technology, onStatusChange, onNotesChange, onDelete })
   };
 
   const handleCardClick = (e) => {
-    // Не меняем статус при клике на ссылку, кнопку, textarea или input
     if (
       e.target.closest('a') ||
       e.target.closest('button') ||
@@ -73,7 +72,10 @@ function TechnologyCard({ technology, onStatusChange, onNotesChange, onDelete })
       sx={{
         cursor: 'pointer',
         transition: 'all 0.3s ease',
-        '&:hover': { transform: 'translateY(-4px)', boxShadow: 8 },
+        '&:hover': { 
+          transform: 'translateY(-4px)', 
+          boxShadow: 8 
+        },
         bgcolor: 'background.paper',
         border: '1px solid',
         borderColor: 'divider',
@@ -82,12 +84,23 @@ function TechnologyCard({ technology, onStatusChange, onNotesChange, onDelete })
     >
       <CardContent sx={{ pb: 1 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+          {/* ← НАЗВАНИЕ С КРАСИВЫМ HOVER-ЭФФЕКТОМ */}
           <Link
             to={`/technologies/${id}`}
-            style={{ textDecoration: 'none', color: 'inherit' }}
+            style={{ textDecoration: 'none' }}
             onClick={(e) => e.stopPropagation()}
           >
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
+                color: 'text.primary',
+                transition: 'color 0.2s ease',
+                '&:hover': {
+                  color: 'primary.main',  // ← вот оно! меняется только цвет
+                }
+              }}
+            >
               {title}
             </Typography>
           </Link>
@@ -101,17 +114,16 @@ function TechnologyCard({ technology, onStatusChange, onNotesChange, onDelete })
           />
         </Box>
 
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.6 }}>
           {description || 'Без описания'}
         </Typography>
 
         {deadline && (
-          <Typography variant="caption" color="primary.main" sx={{ display: 'block', mb: 2 }}>
+          <Typography variant="caption" color="primary.main" sx={{ display: 'block', mb: 2, fontWeight: 500 }}>
             Срок: {deadline}
           </Typography>
         )}
 
-        {/* Заметки — клик не меняет статус */}
         <Box onClick={(e) => e.stopPropagation()}>
           <TechnologyNotes
             notes={notes || ''}
