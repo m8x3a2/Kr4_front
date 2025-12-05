@@ -1,4 +1,12 @@
 Кр 4
+
+
+git clone
+
+npm intall
+
+
+
 npm install @mui/material @emotion/react @emotion/styled
 
 
